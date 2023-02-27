@@ -16,6 +16,20 @@ mongoose
   useUnifiedTopology: true,
 }).then(connection=>{console.log("mongo connection =>>",connection)})
 
+const toursSchema=new mongoose.Schema({
+  name:{
+    type:String,
+    required:[true,"A tour must have a name"],
+    unique:true
+  },
+  rating:{
+    type:Number,
+    default:4.5
+  },
+  price:{}
+})
+
+
 const app = require("./app");
 const port = process.env.PORT || 3005;
 
