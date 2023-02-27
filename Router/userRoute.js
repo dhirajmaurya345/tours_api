@@ -2,6 +2,12 @@ const express=require("express");
 const userController=require("../controller/userController")
 const usersRoute = express.Router();
 
+//middleware 
+
+
+
+
+
 //Users Route
 usersRoute.route("/").get(userController.getAllUsers).post(userController.createUser);
 

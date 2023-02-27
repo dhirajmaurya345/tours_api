@@ -1,7 +1,9 @@
 exports.getAllUsers = (req, res) => {
   res.status(500).json({
     status: "success",
-    message: "This api is not defined",
+    data: {
+      message:"This API is not yet defined"
+    },
   });
 };
 //Create user handler
