@@ -3,7 +3,7 @@ const toureController=require("../controller/toureController")
 const toursRoute = express.Router();
 
 //Middleware
-toursRoute.param('id',toureController.checkID)
+//toursRoute.param('id',toureController.checkID)
 
 // Tours Route
 toursRoute

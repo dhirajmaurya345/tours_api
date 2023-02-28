@@ -1,9 +1,6 @@
-const fs = require("fs");
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours_simple.json`)
-);
-
+const Tours = require("./../models/tourModel");
 //middleware
+/*
 exports.checkID = (req, res, next, val) => {
   console.log("tours id is ->", val);
   if (val*1 > tours.length) {
@@ -11,7 +8,7 @@ exports.checkID = (req, res, next, val) => {
   }
   next();
 };
-
+*/
 exports.checkBody=(req,res,next)=>{
   if(!req.body.name || !req.body.price){
     return res.status(400).json({
@@ -21,6 +18,7 @@ exports.checkBody=(req,res,next)=>{
   }
   next();
 }
+
 
 //Route Handler
 exports.getAllTours = (req, res) => {
@@ -38,18 +36,12 @@ exports.addNewTours = (req, res) => {
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
   tours.push(newTour);
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours_simple.json`,
-    JSON.stringify(tours),
-    (err) => {
-      res.status(201).json({
-        status: "success",
-        data: {
-          tour: tours,
-        },
-      });
-    }
-  );
+  res.status(201).json({
+    status: "success",
+    // data: {
+    //   tour: tours,
+    // },
+  });
 };
 
 exports.getToursById = (req, res) => {
