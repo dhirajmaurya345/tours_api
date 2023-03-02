@@ -26,14 +26,27 @@ exports.getAllTours = async (req, res) => {
     console.log(req.query);
 
     //build the query
-    const queryObj={... req.query}
+    //1)Filtering
+    const queryObj={...req.query}
     const excludeField=['page','sort','limit','field'];
     excludeField.forEach(el=>delete queryObj[el])
 
     //Advance Filter
     let queryStr=JSON.stringify(queryObj)
+    
     queryStr=queryStr.replace(/\b(gte|gt|lte|lt)\b/g,match=>`$${match}`)
     console.log(JSON.parse(queryStr));
+    let query =Tours.find(JSON.parse(queryStr));
+    // console.log("kaniska joshi".replace(/\b( )\b/,match=>` Alpha `))
+//http://localhost:3004/api/v1/tours?duration[gte]=5&difficulty=easy&price[lt]=5000
+    //2)Sorting
+    if(req.query.sort){  
+      const sortBy=req.query.sort.split(',').join(' ');
+      query=query.sort(sortBy)
+      //http://localhost:3004/api/v1/tours?sort=price
+    }else{
+      query=query.sort('-createdAt')
+    } 
     //{difficulty:easy,duration:{$gt:5}}
     //{difficulty:easy,duration:{gt:5}}
 
@@ -45,7 +58,7 @@ exports.getAllTours = async (req, res) => {
        .where("difficulty")
        .equals("easy");
     */
-       const query = await Tours.find(queryObj);
+       //const query = await Tours.find(queryObj);
 
        //execute the query
    const tours=await query;
