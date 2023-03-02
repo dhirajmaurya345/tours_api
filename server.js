@@ -14,7 +14,10 @@ mongoose
   useCreateIndex:true,
   useFindAndModify:false,
   useUnifiedTopology: true,
-}).then(connection=>{console.log("mongo connection =>>",connection)})
+}).then(connection=>
+  {
+  //  console.log("mongo connection =>>",connection)
+  })
 
 
 //testTours.save().then(doc=>{console.log(doc)})
