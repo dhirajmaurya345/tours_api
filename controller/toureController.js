@@ -60,6 +60,15 @@ exports.getAllTours = async (req, res) => {
     */
        //const query = await Tours.find(queryObj);
 
+//Field limitation
+if(req.query.fields){
+  const fields=req.query.fields.split(',').join(' ');
+  query=query.select(fields)
+}else{
+  query=query.select('-__v')
+  //here - mean not including
+}
+
        //execute the query
    const tours=await query;
 
