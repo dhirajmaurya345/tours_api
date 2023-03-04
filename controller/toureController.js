@@ -68,7 +68,15 @@ if(req.query.fields){
   query=query.select('-__v')
   //here - mean not including
 }
-
+//Pagination
+const page=req.query.page*1||1;
+const limit=req.query.limit*1||1;
+const skip=(page-1)*limit;
+query=query.skip(skip).limit(limit)
+if(req.query.page){
+  const numTour=await Tours.countDocuments();
+  if(skip>=numTour){throw new Error("This Page does not exist")}
+}
        //execute the query
    const tours=await query;
 
