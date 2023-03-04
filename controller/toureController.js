@@ -1,4 +1,13 @@
 const Tours = require("./../models/tourModel");
+
+//middleware 
+
+exports.aliasTours=(req,res,next)=>{
+req.query.limit=2;
+req.query.sort='-ratingAverage,price';
+req.query.fields='name,price,ratingsAverage,summary,difficulty';
+}
+
 //middleware
 /*
 exports.checkID = (req, res, next, val) => {
@@ -68,7 +77,8 @@ if(req.query.fields){
   query=query.select('-__v')
   //here - mean not including
 }
-//Pagination
+
+//Pagination(http://localhost:3004/api/v1/tours?page=2&limit=3)
 const page=req.query.page*1||1;
 const limit=req.query.limit*1||1;
 const skip=(page-1)*limit;

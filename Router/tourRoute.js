@@ -8,7 +8,7 @@ const toursRoute = express.Router();
 // Tours Route
 toursRoute
 .route("/")
-.get(toureController.getAllTours)
+.get(toureController.aliasTours,toureController.getAllTours)
 //.post(toureController.checkBody,toureController.addNewTours);
 .post(toureController.addNewTours);
 toursRoute
