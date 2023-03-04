@@ -1,33 +1,12 @@
 const Tours = require("./../models/tourModel");
 
-//middleware 
-
-exports.aliasTours=(req,res,next)=>{
-req.query.limit=2;
-req.query.sort='-ratingAverage,price';
-req.query.fields='name,price,ratingsAverage,summary,difficulty';
-}
-
 //middleware
-/*
-exports.checkID = (req, res, next, val) => {
-  console.log("tours id is ->", val);
-  if (val*1 > tours.length) {
-    return res.status(404).json({ status: "Fail", message: "Invalide Id" });
-  }
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
   next();
 };
-
-exports.checkBody=(req,res,next)=>{
-  if(!req.body.name || !req.body.price){
-    return res.status(400).json({
-      status:"Failed",
-      message:"Doest not contains name or price"
-    }) 
-  }
-  next();
-}
-*/
 
 //Route Handler
 exports.getAllTours = async (req, res) => {
@@ -36,61 +15,51 @@ exports.getAllTours = async (req, res) => {
 
     //build the query
     //1)Filtering
-    const queryObj={...req.query}
-    const excludeField=['page','sort','limit','field'];
-    excludeField.forEach(el=>delete queryObj[el])
+    const queryObj = { ...req.query };
+    const excludeField = ["page", "sort", "limit", "field"];
+    excludeField.forEach((el) => delete queryObj[el]);
 
     //Advance Filter
-    let queryStr=JSON.stringify(queryObj)
-    
-    queryStr=queryStr.replace(/\b(gte|gt|lte|lt)\b/g,match=>`$${match}`)
-    console.log(JSON.parse(queryStr));
-    let query =Tours.find(JSON.parse(queryStr));
+    let queryStr = JSON.stringify(queryObj);
+
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+   // console.log(JSON.parse(queryStr));
+    let query = Tours.find(JSON.parse(queryStr));
     // console.log("kaniska joshi".replace(/\b( )\b/,match=>` Alpha `))
-//http://localhost:3004/api/v1/tours?duration[gte]=5&difficulty=easy&price[lt]=5000
+    //http://localhost:3004/api/v1/tours?duration[gte]=5&difficulty=easy&price[lt]=5000
     //2)Sorting
-    if(req.query.sort){  
-      const sortBy=req.query.sort.split(',').join(' ');
-      query=query.sort(sortBy)
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
+      query = query.sort(sortBy);
       //http://localhost:3004/api/v1/tours?sort=price
-    }else{
-      query=query.sort('-createdAt')
-    } 
-    //{difficulty:easy,duration:{$gt:5}}
-    //{difficulty:easy,duration:{gt:5}}
+    } else {
+      query = query.sort("-createdAt");
+    }
 
-    //
-    /*
-     const query = Tours.find()
-       .where("duration")
-       .equals(5)
-       .where("difficulty")
-       .equals("easy");
-    */
-       //const query = await Tours.find(queryObj);
+    //Field limitation
+    if (req.query.fields) {
+      const fields = req.query.fields.split(",").join(" ");
+      query = query.select(fields);
+    } else {
+      query = query.select("-__v");
+      //here - mean not including
+    }
 
-//Field limitation
-if(req.query.fields){
-  const fields=req.query.fields.split(',').join(' ');
-  query=query.select(fields)
-}else{
-  query=query.select('-__v')
-  //here - mean not including
-}
+    //Pagination(http://localhost:3004/api/v1/tours?page=2&limit=3)
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 1;
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+    if (req.query.page) {
+      const numTour = await Tours.countDocuments();
+      if (skip >= numTour) {
+        throw new Error("This Page does not exist");
+      }
+    }
+    //execute the query
+    const tours = await query;
 
-//Pagination(http://localhost:3004/api/v1/tours?page=2&limit=3)
-const page=req.query.page*1||1;
-const limit=req.query.limit*1||1;
-const skip=(page-1)*limit;
-query=query.skip(skip).limit(limit)
-if(req.query.page){
-  const numTour=await Tours.countDocuments();
-  if(skip>=numTour){throw new Error("This Page does not exist")}
-}
-       //execute the query
-   const tours=await query;
-
-   //Send response
+    //Send response
     res.status(200).json({
       status: "success",
       result: tours.length,

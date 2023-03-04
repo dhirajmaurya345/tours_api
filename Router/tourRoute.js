@@ -7,8 +7,12 @@ const toursRoute = express.Router();
 
 // Tours Route
 toursRoute
+.route("/top-5-cheap")
+.get(toureController.aliasTopTours,toureController.getAllTours)
+
+toursRoute
 .route("/")
-.get(toureController.aliasTours,toureController.getAllTours)
+.get(toureController.getAllTours)
 //.post(toureController.checkBody,toureController.addNewTours);
 .post(toureController.addNewTours);
 toursRoute
