@@ -51,8 +51,12 @@ const toursSchema=new mongoose.Schema({
     default:Date.now(),
     select:false
   },
-  startDates:[Date]
-  },
+  startDates:[Date],
+  secreteToure:
+  {
+    type:Boolean,
+    default:false
+  }},
   {
   toJSON:{virtuals:true},
   toObject:{virtuals:true}
@@ -60,12 +64,29 @@ const toursSchema=new mongoose.Schema({
   
 //Document Middleware : run before .save() and .create()  
 //npm install slugify
-//each middleware function in pre save have net
+//each middleware function in pre save have net and we have use multiple middleware
 toursSchema.pre('save',function(next){
   this.slug=slugify(this.name,{lower:true})
   next();
 })
 
+//post middleware have access to doc created after pre middleware and also next
+// toursSchema.post('save',function(doc,next){
+//   console.log(doc)
+//   next();
+// })
+
+//Query middleware we are using regular express so we can apply all time of fine i.g. fineone, findanddelete etc
+toursSchema.pre(/^find/,function(next){
+  this.find({secreteToure:{$ne:true}})
+  this.start=Date.now();
+  next();
+})
+
+toursSchema.post(/^find/,function(docs,next){
+console.log(`Query took time -> ${Date.now()-this.start} milliseconds`);
+  next();
+})
   //this is used to conver from one unit to other
   toursSchema.virtual("durationWeeks").get(function(){
     return this.duration/7;
