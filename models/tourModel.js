@@ -1,4 +1,5 @@
 const mongoose=require('mongoose')
+const slugify=require("slugify")
 const toursSchema=new mongoose.Schema({
     name:{
       type:String,
@@ -6,6 +7,7 @@ const toursSchema=new mongoose.Schema({
       unique:true,
       trim:true
     },
+    slug:String,
     duration:{
       type:Number,
       required:[true,"A tour must have a duration"]
@@ -56,6 +58,14 @@ const toursSchema=new mongoose.Schema({
   toObject:{virtuals:true}
   })
   
+//Document Middleware : run before .save() and .create()  
+//npm install slugify
+//each middleware function in pre save have net
+toursSchema.pre('save',function(next){
+  this.slug=slugify(this.name,{lower:true})
+  next();
+})
+
   //this is used to conver from one unit to other
   toursSchema.virtual("durationWeeks").get(function(){
     return this.duration/7;
@@ -64,3 +74,6 @@ const toursSchema=new mongoose.Schema({
 const Tours=new mongoose.model('Tours',toursSchema)
   
 module.exports=Tours
+
+//Type of middleware in mongoose
+//1.Document,2.Query,3.Model,4.Aggregate
