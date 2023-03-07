@@ -8,7 +8,16 @@ const toursRoute = express.Router();
 // Tours Route
 toursRoute
 .route("/top-5-cheap")
-.get(toureController.aliasTopTours,toureController.getAllTours)
+//.get(toureController.aliasTopTours,toureController.getAllTours)
+.get(toureController.aliasTopTours,toureController.topcheap)
+
+toursRoute
+.route("/tour-stats")
+.get(toureController.getToursStats)
+
+toursRoute
+.route("/monthly-plan/:year")
+.get(toureController.getMonthlyPlan)
 
 toursRoute
 .route("/")

@@ -50,8 +50,17 @@ const toursSchema=new mongoose.Schema({
     select:false
   },
   startDates:[Date]
+  },
+  {
+  toJSON:{virtuals:true},
+  toObject:{virtuals:true}
   })
   
+  //this is used to conver from one unit to other
+  toursSchema.virtual("durationWeeks").get(function(){
+    return this.duration/7;
+  })  
+
 const Tours=new mongoose.model('Tours',toursSchema)
   
 module.exports=Tours

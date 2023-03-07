@@ -11,6 +11,26 @@ exports.aliasTopTours = (req, res, next) => {
 //Route Handler
 exports.getAllTours = async (req, res) => {
   try {
+  
+    const tours = await Tours.find()
+    //Send response
+    res.status(200).json({
+      status: "success",
+      result: tours.length,
+      data: {
+        tours,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: "Failed",
+      message: err,
+    });
+  }
+};
+
+exports.topcheap = async (req, res) => {
+  try {
     console.log(req.query);
     //execute the query
     const features = new APIFeatures(Tours.find(), req.query)
@@ -19,7 +39,6 @@ exports.getAllTours = async (req, res) => {
       .limitField()
       .paginate();
     const tours = await features.query;
-
     //Send response
     res.status(200).json({
       status: "success",
@@ -107,16 +126,16 @@ exports.deleteTourById = async (req, res) => {
 
 exports.getToursStats = async (req, res) => {
   try {
-    const stats = await Tour.aggregate([
+    const stats = await Tours.aggregate([
       {
-        $match: { ratingAverage: { $gte: 4.5 } }
+        $match: { ratingsAverage: { $gte: 4.5 } }
       },
       {
         $group: {
-          _id: null,
+          _id: "$difficulty",
           numTours: { $sum: 1 },
           numRatings: { $sum: "$ratingQuantity" },
-          avgRating: { $avg: "$ratingAverage" },
+          avgRating: { $avg: "$ratingsAverage" },
           avgPrice: { $avg: "$price" },
           minPrice: { $min: "$price" },
           maxPrice: { $max: "$price" },
@@ -124,7 +143,7 @@ exports.getToursStats = async (req, res) => {
       },
     ]);
 
-    res.status(204).json({
+    res.status(200).json({
       status: "success",
       data: {
         stats,
@@ -137,3 +156,56 @@ exports.getToursStats = async (req, res) => {
     });
   }
 };
+
+exports.getMonthlyPlan=async (req,res)=>{
+ try{
+  const year=req.params.year;
+  const plan=await Tours.aggregate([
+{
+  $unwind:"$startDates"
+},
+{
+  $match:{
+    startDates:
+    {
+    $gte:new Date(`${year}-01-01`),
+    $lt:new Date(`${year}-12-31`)
+  }
+  }
+},
+{
+$group:{
+  _id:{$month:"$startDates"},
+  numTourStarts:{$sum:1},
+  tours:{$push:"$name"}
+}
+},{
+  $addFields:{month:"$_id"}
+},
+{
+  $project:{
+    _id:0 //it will hide id from api response 
+
+  }
+},
+{
+$sort:{numTourStarts:-1}
+},
+{
+$limit:5
+}
+  ])
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      plan
+    },
+  });
+} catch (err) {
+  res.status(404).json({
+    status: "Failed",
+    message: err,
+  });
+}
+}
