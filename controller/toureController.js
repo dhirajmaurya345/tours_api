@@ -209,3 +209,40 @@ $limit:5
   });
 }
 }
+
+exports.patchToursById = async (req, res) => {
+  try {
+    const tour = await Tours.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidator: true,
+    });
+    res.status(200).json({
+      status: "success",
+      data: {
+        tour,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "Failed",
+      message: err,
+    });
+  }
+};
+
+exports.deleteTourById = async (req, res) => {
+  try {
+    const tour = await Tours.findByIdAndDelete(req.params.id);
+    res.status(204).json({
+      status: "success",
+      data: {
+        tour,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: "Failed",
+      message: err,
+    });
+  }
+};
