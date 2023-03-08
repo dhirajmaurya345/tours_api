@@ -230,19 +230,3 @@ exports.patchToursById = async (req, res) => {
   }
 };
 
-exports.deleteTourById = async (req, res) => {
-  try {
-    const tour = await Tours.findByIdAndDelete(req.params.id);
-    res.status(204).json({
-      status: "success",
-      data: {
-        tour,
-      },
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: "Failed",
-      message: err,
-    });
-  }
-};
