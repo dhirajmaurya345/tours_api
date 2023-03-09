@@ -52,7 +52,7 @@ const toursSchema=new mongoose.Schema({
     select:false
   },
   startDates:[Date],
-  secreteToure:
+  secretTour:
   {
     type:Boolean,
     default:false
@@ -78,13 +78,15 @@ toursSchema.pre('save',function(next){
 
 //Query middleware we are using regular express so we can apply all time of fine i.g. fineone, findanddelete etc
 toursSchema.pre(/^find/,function(next){
-  this.find({secreteToure:{$ne:true}})
+  this.find({secretTour:{$ne:true}})
   this.start=Date.now();
   next();
 })
 
+//we can findout time took by query to excute
 toursSchema.post(/^find/,function(docs,next){
 console.log(`Query took time -> ${Date.now()-this.start} milliseconds`);
+//console.log(docs)
   next();
 })
   //this is used to conver from one unit to other
