@@ -106,11 +106,7 @@ toursSchema.pre(/^find/, function (next) {
 });
 
 //we can findout time took by query to excute
-toursSchema.post(/^find/, function (docs, next) {
-  console.log(`Query took time -> ${Date.now() - this.start} milliseconds`);
-  //console.log(docs)
-  next();
-});
+
 //aggregate middleware
 toursSchema.pre("aggregate", function () {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
