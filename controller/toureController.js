@@ -207,23 +207,5 @@ exports.getMonthlyPlan = async (req, res) => {
     });
   }
 };
-exports.patchToursById = async (req, res) => {
-  try {
-    const tour = await Tours.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidator: true,
-    });
-    res.status(200).json({
-      status: "success",
-      data: {
-        tour,
-      },
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: "Failed",
-      message: err,
-    });
-  }
-};
+
 
