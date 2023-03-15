@@ -24,4 +24,10 @@ app.use(express.json());
 app.use("/api/v1/tours", toursRoute);
 app.use("/users", usersRoute);
 
+app.all("*",(req,res,next)=>{
+  res.status(404).json({
+    status:"Fail",
+    message:`Can'n find on ${req.originalUrl} on this server`
+  })
+})
 module.exports = app ;
