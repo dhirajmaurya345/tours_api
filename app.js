@@ -5,6 +5,8 @@ const usersRoute = require("./Router/userRoute");
 const express = require("express");
 const app = express();
 const morgon = require("morgan");
+const globleErrorHandler=require('./controller/errorController')
+const AppError=require('./utils/appError')
 
 //To get date when request was made
 app.use((req, res, next) => {
@@ -25,9 +27,9 @@ app.use("/api/v1/tours", toursRoute);
 app.use("/users", usersRoute);
 
 app.all("*",(req,res,next)=>{
-  res.status(404).json({
-    status:"Fail",
-    message:`Can'n find on ${req.originalUrl} on this server`
-  })
+   next(new AppError(`Can't find on ${req.originalUrl} on this server`,404));
 })
+
+ app.use(globleErrorHandler)
+
 module.exports = app ;

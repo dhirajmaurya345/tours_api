@@ -1,5 +1,7 @@
 const Tours = require("./../models/tourModel");
 const APIFeatures = require("./../utils/apiFeatures");
+const catchAsync=require('./../utils/catchAsync');
+const AppError=require('./../utils/appError')
 //middleware
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = "1";
@@ -9,8 +11,7 @@ exports.aliasTopTours = (req, res, next) => {
 };
 
 //Route Handler
-exports.getAllTours = async (req, res) => {
-  try {
+exports.getAllTours =catchAsync(async (req, res,next) => {
     const tours = await Tours.find();
     //Send response
     res.status(200).json({
@@ -20,16 +21,9 @@ exports.getAllTours = async (req, res) => {
         tours,
       },
     });
-  } catch (err) {
-    res.status(404).json({
-      status: "Failed",
-      message: err,
-    });
-  }
-};
+});
 
-exports.topcheap = async (req, res) => {
-  try {
+exports.topcheap =catchAsync( async (req, res,next) => {
     console.log(req.query);
     //execute the query
     const features = new APIFeatures(Tours.find(), req.query)
@@ -46,16 +40,9 @@ exports.topcheap = async (req, res) => {
         tours,
       },
     });
-  } catch (err) {
-    res.status(404).json({
-      status: "Failed",
-      message: err,
-    });
-  }
-};
+});
 
-exports.addNewTours = async (req, res) => {
-  try {
+exports.addNewTours =catchAsync( async (req, res,next) => {
     const newTour = await Tours.create(req.body);
     res.status(200).json({
       status: "success",
@@ -63,32 +50,21 @@ exports.addNewTours = async (req, res) => {
         tour: newTour,
       },
     });
-  } catch (err) {
-    res.status(400).json({
-      status: "Failed",
-      message: err,
-    });
-  }
-};
+});
 
-exports.getToursById = async (req, res) => {
-  try {
-    const tour = await Tours.findById(req.params.id);
+exports.getToursById =catchAsync(async (req, res,next) => {
+      const tour = await Tours.findById(req.params.id);
+      if(!tour){
+        return next(new AppError(`Item ${req.params.id} doest not exit`,404))
+      }
     res.status(200).json({
       status: "success",
       data: { tour },
     });
-  } catch (err) {
-    res.status(400).json({
-      status: "Failed",
-      message: err,
-    });
-  }
-};
+});
 
-exports.patchToursById = async (req, res) => {
-  try {
-    const tour = await Tours.findByIdAndUpdate(req.params.id, req.body, {
+exports.patchToursById =catchAsync(async (req, res,next) => {
+     const tour = await Tours.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidator: false, //if it is false then validator will not work
     });
@@ -98,34 +74,24 @@ exports.patchToursById = async (req, res) => {
         tour,
       },
     });
-  } catch (err) {
-    res.status(400).json({
-      status: "Failed",
-      message: err,
-    });
-  }
-};
+});
 
-exports.deleteTourById = async (req, res) => {
-  try {
+exports.deleteTourById =catchAsync( async (req, res,next) => {
+ 
     const tour = await Tours.findByIdAndDelete(req.params.id);
+    if(!tour){
+      return next(new AppError(`Item ${req.params.id} doest not exit`,404))
+    }
     res.status(204).json({
       status: "success",
       data: {
         tour,
       },
     });
-  } catch (err) {
-    res.status(404).json({
-      status: "Failed",
-      message: err,
-    });
-  }
-};
+});
 
-exports.getToursStats = async (req, res) => {
-  try {
-    const stats = await Tours.aggregate([
+exports.getToursStats =catchAsync( async (req, res,next) => {
+     const stats = await Tours.aggregate([
       {
         $match: { ratingsAverage: { $gte: 4.5 } },
       },
@@ -148,16 +114,9 @@ exports.getToursStats = async (req, res) => {
         stats,
       },
     });
-  } catch (err) {
-    res.status(404).json({
-      status: "Failed",
-      message: err,
-    });
-  }
-};
+});
 
-exports.getMonthlyPlan = async (req, res) => {
-  try {
+exports.getMonthlyPlan =catchAsync( async (req, res,next) => {
     const year = req.params.year;
     const plan = await Tours.aggregate([
       {
@@ -200,15 +159,9 @@ exports.getMonthlyPlan = async (req, res) => {
         plan,
       },
     });
-  } catch (err) {
-    res.status(404).json({
-      status: "Failed",
-      message: err,
-    });
-  }
-};
-exports.patchToursById = async (req, res) => {
-  try {
+});
+
+exports.patchToursById =catchAsync( async (req, res,next) => {
     const tour = await Tours.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidator: true,
@@ -219,11 +172,5 @@ exports.patchToursById = async (req, res) => {
         tour,
       },
     });
-  } catch (err) {
-    res.status(400).json({
-      status: "Failed",
-      message: err,
-    });
-  }
-};
+});
 
