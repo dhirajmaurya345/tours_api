@@ -1,6 +1,9 @@
 const express=require("express")
 const toureController=require("../controller/toureController")
+const authController=require("../controller/authController")
+
 const toursRoute = express.Router();
+
 
 //Middleware
 //toursRoute.param('id',toureController.checkID)
@@ -21,7 +24,7 @@ toursRoute
 
 toursRoute
 .route("/")
-.get(toureController.getAllTours)
+.get(authController.protect,toureController.getAllTours)
 //.post(toureController.checkBody,toureController.addNewTours);
 .post(toureController.addNewTours);
 toursRoute

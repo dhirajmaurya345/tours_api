@@ -1,11 +1,14 @@
 const express=require("express");
 const userController=require("../controller/userController")
+const authController=require("../controller/authController")
+
 const usersRoute = express.Router();
 
 //middleware 
 
 
-
+usersRoute.post('/signup',authController.signUp)
+usersRoute.post('/login',authController.login)
 
 
 //Users Route

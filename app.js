@@ -11,7 +11,7 @@ const AppError=require('./utils/appError')
 //To get date when request was made
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  next();
+   next();
 });
 
 //to get logs for api which are callled
