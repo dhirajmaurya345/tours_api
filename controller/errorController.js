@@ -19,6 +19,9 @@ const handleValidationErrorDB = err => {
   return new AppError(message, 400);
 };
 
+const handleJWTError=()=>new AppError("Invalide token. Please login again",401)
+const handleTokenExpiredError=()=>new AppError("Expired token. Please login again",401)
+
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -28,22 +31,23 @@ const sendErrorDev = (err, res) => {
   });
 };
 
-const sendErrorProd = (err, res) => {
+const sendErrorProd = (error, res) => {
   // Operational, trusted error: send message to client
-  if (err.isOperational) {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message
+  if (error.isOperational) {
+    res.status(error.statusCode).json({
+      status: error.status,
+      message: error.message,
+     // stack: err.stack
     });
     // Programming or other unknown error: don't leak error details
   } else {
     // 1) Log error
-    console.error('ERROR 💥', err);
+    console.error('ERROR 💥', error);
 
     // 2) Send generic message
     res.status(500).json({
       status: 'error',
-      message: err
+      message: error
     });
   }
 };
@@ -61,7 +65,8 @@ module.exports = (err, req, res, next) => {
    if (err.name === 'CastError') error = handleCastErrorDB(error);
    if (err.code === 11000) error = handleDuplicateFieldsDB(error);
    if (err.name === 'ValidationError')error = handleValidationErrorDB(error);
-
-    sendErrorProd(error, res);
+   if(err.name=='JsonWebTokenError') error=handleJWTError();
+   if(err.name=='TokenExpiredError')error=handleTokenExpiredError();
+   sendErrorProd(error, res);
   }
 };

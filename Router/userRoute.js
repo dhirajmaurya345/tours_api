@@ -4,16 +4,16 @@ const authController=require("../controller/authController")
 
 const usersRoute = express.Router();
 
-//middleware 
-
-
 usersRoute.post('/signup',authController.signUp)
 usersRoute.post('/login',authController.login)
 
-
+usersRoute.post('/forgotPassword',authController.forgotPassword)
+usersRoute.patch('/resetpassword/:token',authController.resetPassword)
 //Users Route
-usersRoute.route("/").get(userController.getAllUsers).post(userController.createUser);
+usersRoute.route("/")
+.get(userController.getAllUsers).post(userController.createUser);
 
 usersRoute.route("/:id").get(userController.getUser).patch(userController.updateUser).delete(userController.deleteUser);
 
 module.exports = usersRoute;
+

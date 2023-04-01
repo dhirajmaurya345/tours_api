@@ -1,3 +1,10 @@
+
+const User = require("./../models/userModel");
+const catchAsync = require("./../utils/catchAsync");
+const AppError = require("./../utils/appError");
+
+
+
 exports.getAllUsers = (req, res) => {
   res.status(500).json({
     status: "success",
@@ -16,8 +23,8 @@ exports.createUser = (req, res) => {
 //get User by ID handler
 exports.getUser = (req, res) => {
   const id = req.params.id * 1;
-  const user = users.find((el) => el.id === id);
-  if (id > users.length) {
+  const user = User.find((el) => el.id === id);
+  if (id > user.length) {
     res.status(404).json({ status: "Fail", message: "Invalide Id" });
   }
   res.status(200).json({
@@ -27,7 +34,8 @@ exports.getUser = (req, res) => {
 };
 //Update user handler
 exports.updateUser = (req, res) => {
-  if (req.params.id * 1 > users.length) {
+
+  if (req.params.id * 1 > User.length) {
     res.status(404).json({ status: "Fail", message: "Invalide Id" });
   }
   res.status(200).json({
@@ -39,7 +47,7 @@ exports.updateUser = (req, res) => {
 };
 //Detele User handler
 exports.deleteUser = (req, res) => {
-  if (req.params.id * 1 > users.length) {
+  if (req.params.id * 1 > User.length) {
     res.status(404).json({ status: "Fail", message: "Invalide Id" });
   }
   res.status(204).json({
