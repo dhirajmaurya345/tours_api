@@ -1,5 +1,5 @@
 const AppError = require('./../utils/appError');
-
+const User = require("./../models/userModel");
 const handleCastErrorDB = err => {
   const message = `Invalid ${err.path}: ${err.value}.`;
   return new AppError(message, 400);
@@ -21,7 +21,6 @@ const handleValidationErrorDB = err => {
 
 const handleJWTError=()=>new AppError("Invalide token. Please login again",401)
 const handleTokenExpiredError=()=>new AppError("Expired token. Please login again",401)
-
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
