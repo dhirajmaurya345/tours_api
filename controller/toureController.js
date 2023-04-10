@@ -2,6 +2,8 @@ const Tours = require("./../models/tourModel");
 const APIFeatures = require("./../utils/apiFeatures");
 const catchAsync = require("./../utils/catchAsync");
 const AppError = require("./../utils/appError");
+
+const handlerFactoryy=require('./handlerFactory')
 //middleware
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = "1";
@@ -42,18 +44,10 @@ exports.topcheap = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.addNewTours = catchAsync(async (req, res, next) => {
-  const newTour = await Tours.create(req.body);
-  res.status(200).json({
-    status: "success",
-    data: {
-      tour: newTour,
-    },
-  });
-});
+
 
 exports.getToursById = catchAsync(async (req, res, next) => {
-  const tour = await Tours.findById(req.params.id);
+  const tour = await Tours.findById(req.params.id).populate('reviews');
   if (!tour) {
     return next(new AppError(`Item ${req.params.id} doest not exit`, 404));
   }
@@ -63,31 +57,10 @@ exports.getToursById = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.patchToursById = catchAsync(async (req, res, next) => {
-  const tour = await Tours.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidator: false, //if it is false then validator will not work
-  });
-  res.status(200).json({
-    status: "success",
-    data: {
-      tour,
-    },
-  });
-});
+exports.addNewTour=handlerFactoryy.createOne(Tours)
+exports.patchToursById=handlerFactoryy.patchToursById(Tours)
+exports.deleteTourById = handlerFactoryy.deleteTourById(Tours)
 
-exports.deleteTourById = catchAsync(async (req, res, next) => {
-  const tour = await Tours.findByIdAndDelete(req.params.id);
-
-  if (!tour) {
-    return next(new AppError(`Item ${req.params.id} doest not exit`, 404));
-  }
-
-  res.status(204).json({
-    status: "success",
-    data: null,
-  });
-});
 
 exports.getToursStats = catchAsync(async (req, res, next) => {
   const stats = await Tours.aggregate([

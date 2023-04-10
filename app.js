@@ -2,6 +2,7 @@
 //npm i eslint prettier eslint-plugin-prettier eslint-plugin-prettier eslint-config-airbnb eslint-plugin-node eslint-plugin-import eslint-plugin-jsx-ally eslint-plugin-react --save-dev
 const toursRoute = require("./Router/tourRoute");
 const usersRoute = require("./Router/userRoute");
+const reviewRoute=require('./Router/reviewRoute')
 const express = require("express");
 //npm i express-rate-limit
 const rateLimit = require("express-rate-limit");
@@ -67,7 +68,8 @@ if (process.env.NODE_ENV === "development") {
 //app.use(express.static(`${__dirname}/public`));
 
 app.use("/api/v1/tours", toursRoute);
-app.use("/users", usersRoute);
+app.use("/api/v1/users", usersRoute);
+app.use("/api/v1/review", reviewRoute);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find on ${req.originalUrl} on this server`, 404));
