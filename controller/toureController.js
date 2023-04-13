@@ -1,9 +1,10 @@
 const Tours = require("./../models/tourModel");
-const APIFeatures = require("./../utils/apiFeatures");
+
 const catchAsync = require("./../utils/catchAsync");
 const AppError = require("./../utils/appError");
 
-const handlerFactoryy=require('./handlerFactory')
+const factory=require('./handlerFactory')
+
 //middleware
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = "1";
@@ -12,55 +13,11 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
-//Route Handler
-exports.getAllTours = catchAsync(async (req, res, next) => {
-  const tours = await Tours.find();
-  //Send response
-  res.status(200).json({
-    status: "success",
-    result: tours.length,
-    data: {
-      tours,
-    },
-  });
-});
-
-exports.topcheap = catchAsync(async (req, res, next) => {
-  console.log(req.query);
-  //execute the query
-  const features = new APIFeatures(Tours.find(), req.query)
-    .filter()
-    .sort()
-    .limitField()
-    .paginate();
-  const tours = await features.query;
-  //Send response
-  res.status(200).json({
-    status: "success",
-    result: tours.length,
-    data: {
-      tours,
-    },
-  });
-});
-
-
-
-exports.getToursById = catchAsync(async (req, res, next) => {
-  const tour = await Tours.findById(req.params.id).populate('reviews');
-  if (!tour) {
-    return next(new AppError(`Item ${req.params.id} doest not exit`, 404));
-  }
-  res.status(200).json({
-    status: "success",
-    data: { tour },
-  });
-});
-
-exports.addNewTour=handlerFactoryy.createOne(Tours)
-exports.patchToursById=handlerFactoryy.patchToursById(Tours)
-exports.deleteTourById = handlerFactoryy.deleteTourById(Tours)
-
+exports.getTour=factory.getOne(Tours,{path:'reviews'})
+exports.createTour=factory.createOne(Tours);
+exports.patchToursById=factory.updateOne(Tours);
+exports.deleteTourById = factory.deleteOne(Tours);
+exports.getAllTours =factory.getAll(Tours);
 
 exports.getToursStats = catchAsync(async (req, res, next) => {
   const stats = await Tours.aggregate([
@@ -133,15 +90,3 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.patchToursById = catchAsync(async (req, res, next) => {
-  const tour = await Tours.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidator: true,
-  });
-  res.status(200).json({
-    status: "success",
-    data: {
-      tour,
-    },
-  });
-});

@@ -116,7 +116,8 @@ const toursSchema = new mongoose.Schema(
   }
 );
 
-
+toursSchema.index({price:1,ratingsAverage:-1});
+toursSchema.index({slug:1});
 
 //virtual populate
 

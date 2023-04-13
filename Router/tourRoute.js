@@ -12,23 +12,34 @@ toursRoute.use("/:tourId/review", reviewRoute);
 // Tours Route
 toursRoute
   .route("/top-5-cheap")
-  //.get(toureController.aliasTopTours,toureController.getAllTours)
-  .get(toureController.aliasTopTours, toureController.topcheap);
+  .get(toureController.aliasTopTours,toureController.getAllTours);
 
 toursRoute.route("/tour-stats").get(toureController.getToursStats);
-
-toursRoute.route("/monthly-plan/:year").get(toureController.getMonthlyPlan);
+toursRoute
+  .route("/monthly-plan/:year")
+  .get(
+    authController.protect,
+    authController.restrictTo("admin", "lead-guide", "guide"),
+    toureController.getMonthlyPlan
+  );
 
 toursRoute
   .route("/")
-  .get(authController.protect, toureController.getAllTours)
-  //.post(toureController.checkBody,toureController.addNewTours);
-  .post(toureController.addNewTour);
+  .get(toureController.getAllTours)
+  .post(
+    authController.protect,
+    authController.restrictTo("admin", "lead-guide"),
+    toureController.createTour
+  );
 
 toursRoute
   .route("/:id")
-  .get(toureController.getToursById)
-  .patch(toureController.patchToursById)
+  .get(toureController.getTour)
+  .patch(
+    authController.protect,
+    authController.restrictTo("admin", "lead-guide"),
+    toureController.patchToursById
+  )
   .delete(
     authController.protect,
     authController.restrictTo("admin", "lead-guide"),

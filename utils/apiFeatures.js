@@ -38,7 +38,7 @@ class APIFeatures {
   paginate() {
     //Pagination(http://localhost:3004/api/v1/tours?page=2&limit=3)
     const page = this.queryString.page * 1 || 1;
-    const limit = this.queryString.limit * 1 || 1;
+    const limit = this.queryString.limit * 1 || 100;
     const skip = (page - 1) * limit;
     this.query = this.query.skip(skip).limit(limit);
     return this;
